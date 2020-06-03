@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ProductList from '../../components/ProductList/ProductList';
 import ProductItem from '../../components/ProductItem/ProductItem';
 import {connect} from 'react-redux';
-import callApi from '../../utils/apiCaller';
+import callAPI from '../../utils/apiCaller';
 import { Link } from 'react-router-dom';
 
 class ProductListPage extends Component {
@@ -15,7 +15,7 @@ class ProductListPage extends Component {
     }
 
     componentDidMount(){
-        callApi('products','GET',null).then(res => {
+        callAPI('products','GET',null).then(res => {
             this.setState({
                 products : res.data
             });
