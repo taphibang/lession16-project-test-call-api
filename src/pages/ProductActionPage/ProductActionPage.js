@@ -14,6 +14,22 @@ class ProductActionPage extends Component {
         };
     }
 
+    componentDidMount(){
+        var {match} = this.props;
+        if(match){
+            var id = match.params.id;
+            callAPI(`products/${id}`, 'GET', null).then(res => {
+                var data = res.data;
+                this.setState({
+                    id: data.id,
+                    txtName : data.name,
+                    txtPrice : data.price,
+                    chkbStatus : data.status
+                })
+            });
+        }
+    }
+
     onChange = (e) => {
         var target = e.target;
         var name = target.name;
@@ -25,15 +41,26 @@ class ProductActionPage extends Component {
 
     onSave = (e) => {
         e.preventDefault();
-        var { txtName, txtPrice, chkbStatus } = this.state;
+        var {id, txtName, txtPrice, chkbStatus } = this.state;
         var {history} = this.props;
-        callAPI('products', 'POST', {
-            name: txtName,
-            price: txtPrice,
-            status: chkbStatus
-        }).then(res => {
-            history.goBack(); // chuyển về trang trước đó
-        })
+
+        if(id){ // UPDATE
+            callAPI(`products/${id}`,'PUT', {
+                name: txtName,
+                price: txtPrice,
+                status: chkbStatus
+            }).then(res => {
+                history.goBack();
+            });
+        }else{ // CREATE
+            callAPI('products', 'POST', {
+                name: txtName,
+                price: txtPrice,
+                status: chkbStatus
+            }).then(res => {
+                history.goBack(); // chuyển về trang trước đó
+            });
+        }
     }
 
     render() {
@@ -60,7 +87,13 @@ class ProductActionPage extends Component {
 
                     <div className="checkbox">
                         <label>
-                            <input type="checkbox" name="chkbStatus" value={chkbStatus} onChange={this.onChange} />
+                            <input 
+                            type="checkbox"
+                            name="chkbStatus"
+                            value={chkbStatus}
+                            onChange={this.onChange}
+                            checked={chkbStatus}
+                            />
                             Còn Hàng
                         </label>
                     </div>
