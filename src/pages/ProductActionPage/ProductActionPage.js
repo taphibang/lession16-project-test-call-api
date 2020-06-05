@@ -32,7 +32,7 @@ class ProductActionPage extends Component {
             price: txtPrice,
             status: chkbStatus
         }).then(res => {
-            history.goBack();
+            history.goBack(); // chuyển về trang trước đó
         })
     }
 
