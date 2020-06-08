@@ -21,7 +21,7 @@ const products = (state = initialState, action) => {
             return [...state]
         case Types.DELETE_PRODUCT:
             index = findIndex(state,id);
-            state.splice(index, -1);
+            state.splice(index, 1);
             return [...state];
         case Types.ADD_PRODUCT:
             state.push(action.products);
