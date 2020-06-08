@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import callAPI from '../../utils/apiCaller';
 import { Link } from 'react-router-dom';
-
+import {actAddProductsRequest, actGetProductsRequest, actUpdateProductsRequest} from '../../actions/index';
+import {connect} from 'react-redux';
 class ProductActionPage extends Component {
 
     constructor(props) {
@@ -14,18 +14,22 @@ class ProductActionPage extends Component {
         };
     }
 
-    componentDidMount(){
+    UNSAFE_componentDidMount(){
         var {match} = this.props;
         if(match){
             var id = match.params.id;
-            callAPI(`products/${id}`, 'GET', null).then(res => {
-                var data = res.data;
-                this.setState({
-                    id: data.id,
-                    txtName : data.name,
-                    txtPrice : data.price,
-                    chkbStatus : data.status
-                })
+            this.props.onEditProducts(id);
+        }
+    }
+
+    UNSAFE_componentWillReceiveProps(nextProps){       
+        if(nextProps && nextProps.itemEditting){
+            var {itemEditting} = nextProps;
+            this.setState({
+                id : itemEditting.id,
+                txtName : itemEditting.name,
+                txtPrice : itemEditting.price,
+                chkbStatus : itemEditting.status
             });
         }
     }
@@ -43,24 +47,19 @@ class ProductActionPage extends Component {
         e.preventDefault();
         var {id, txtName, txtPrice, chkbStatus } = this.state;
         var {history} = this.props;
+        var products = {
+            id : id,
+            name : txtName,
+            price : txtPrice,
+            status : chkbStatus
+        };
 
         if(id){ // UPDATE
-            callAPI(`products/${id}`,'PUT', {
-                name: txtName,
-                price: txtPrice,
-                status: chkbStatus
-            }).then(res => {
-                history.goBack();
-            });
+            this.props.onUpdateProducts(products);
         }else{ // CREATE
-            callAPI('products', 'POST', {
-                name: txtName,
-                price: txtPrice,
-                status: chkbStatus
-            }).then(res => {
-                history.goBack(); // chuyển về trang trước đó
-            });
+            this.props.onAddProducts(products);
         }
+        history.goBack();
     }
 
     render() {
@@ -109,8 +108,26 @@ class ProductActionPage extends Component {
             </div>
         );
     }
-
-
 }
 
-export default ProductActionPage;
+const mapStateToProps = (state) => {
+    return {
+        itemEditting : state.itemEditting
+    }
+}
+
+const mapDispatchToProps = (dispatch,props) => {
+    return{
+        onAddProducts : (products) => {
+            dispatch(actAddProductsRequest(products))
+        },
+        onEditProducts : (id) => {
+            dispatch(actGetProductsRequest(id))
+        },
+        onUpdateProducts : (products) => {
+            dispatch(actUpdateProductsRequest(products))
+        }
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps) (ProductActionPage);

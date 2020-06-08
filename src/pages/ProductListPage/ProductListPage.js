@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import { Link } from 'react-router-dom';
 import {actFetchProductsRequest, actDeleteProductsRequest} from '../../actions/index';
 
+
 class ProductListPage extends Component {
 
     componentDidMount(){
